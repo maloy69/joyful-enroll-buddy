@@ -791,7 +791,38 @@ function PendaftaranPage() {
         )}
 
         {step >= 4 && (!user || !reg) && (
-          <AjakanMasuk pesan="Isian Anda sudah tersimpan di perangkat ini. Buat akun atau masuk untuk mengunggah dokumen dan mengirim pendaftaran." />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Pelajari dulu cara mengunggah dokumen — Anda bisa melihat tutorialnya tanpa masuk.
+              </p>
+              <Button variant="outline" size="sm" onClick={() => setTourOpen(true)}>
+                <CircleHelp className="size-4" /> Lihat Tutorial
+              </Button>
+            </div>
+
+            <PanduanPanel />
+
+            <div className="rounded-xl border bg-card p-4 opacity-90" data-tour="contoh-kartu">
+              <p className="text-sm font-medium">Contoh kartu unggahan</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Setelah masuk, tiap dokumen tampil seperti ini lengkap dengan tombol pilih berkas
+                dan status verifikasi.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button size="sm" variant="secondary" disabled>
+                  Pilih Berkas
+                </Button>
+                <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+                  Menunggu verifikasi
+                </span>
+              </div>
+            </div>
+
+            <div data-tour="masuk">
+              <AjakanMasuk pesan="Isian Anda sudah tersimpan di perangkat ini. Masuk dengan akun Google untuk mengunggah dokumen dan mengirim pendaftaran." />
+            </div>
+          </div>
         )}
 
         {step === 4 && !!user && !!reg && (
