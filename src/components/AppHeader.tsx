@@ -145,8 +145,9 @@ export function AppHeader() {
               </Link>
             )}
           </nav>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 }
