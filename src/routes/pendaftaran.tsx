@@ -1,7 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Send, Upload } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  CircleHelp,
+  Lightbulb,
+  ListChecks,
+  Loader2,
+  Send,
+  Upload,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import {
@@ -20,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DocumentUploader, type DocRow } from "@/components/DocumentUploader";
+import { DocGuideTour, type TourStep } from "@/components/DocGuideTour";
 
 export const Route = createFileRoute("/pendaftaran")({
   ssr: false,
@@ -52,6 +63,48 @@ const LANGKAH = [
 
 /** Kunci penyimpanan sementara di perangkat untuk pendaftar yang belum masuk. */
 const DRAFT_KEY = "spmb-draft";
+
+/** Penanda bahwa tutorial unggah dokumen sudah pernah tampil otomatis. */
+const TOUR_KEY = "spmb-tour-docs-seen";
+
+/** Penjelasan singkat tiap dokumen untuk panel panduan. */
+const DOC_DESC: Record<string, string> = {
+  kk: "Scan atau foto Kartu Keluarga yang masih berlaku.",
+  akta: "Scan akta kelahiran, boleh fotokopi yang dilegalisir.",
+  rapor: "Scan rapor semester 1–5, pastikan nilai terbaca jelas.",
+  ijazah: "Ijazah SMP/MTs atau Surat Keterangan Lulus (SKL).",
+  foto: "Pas foto 3×4 berlatar polos, wajah terlihat jelas.",
+  prestasi: "Sertifikat kejuaraan atau prestasi, jika ada.",
+};
+
+/** Urutan langkah tutorial on-screen di langkah Dokumen. */
+const TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="panduan"]',
+    title: "Baca panduan dulu",
+    body: "Panel ini merangkum dokumen yang harus disiapkan, contoh format yang diterima, dan ukuran maksimal berkas.",
+  },
+  {
+    selector: '[data-tour="kartu-dokumen"]',
+    title: "Satu kartu, satu dokumen",
+    body: "Setiap dokumen punya kartu sendiri. Tanda bintang merah berarti wajib diunggah sebelum pendaftaran bisa dikirim.",
+  },
+  {
+    selector: '[data-tour="pilih-berkas"]',
+    title: "Pilih berkas di sini",
+    body: "Tekan tombol ini untuk memilih berkas dari HP atau komputer. Foto dari kamera HP otomatis dikecilkan, jadi hampir selalu langsung bisa diunggah.",
+  },
+  {
+    selector: '[data-tour="status-dokumen"]',
+    title: "Pantau status berkas",
+    body: "Setelah diunggah, status tampil di sini: menunggu verifikasi, disetujui, atau ditolak beserta catatan perbaikannya.",
+  },
+  {
+    selector: '[data-tour="lanjut"]',
+    title: "Lanjut ke ringkasan",
+    body: "Jika semua dokumen wajib sudah terunggah, tekan Simpan & Lanjut untuk memeriksa ringkasan lalu mengirim pendaftaran.",
+  },
+];
 
 function bacaDraft(): Record<string, string> {
   if (typeof window === "undefined") return {};
@@ -165,6 +218,7 @@ function PendaftaranPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
@@ -261,6 +315,19 @@ function PendaftaranPage() {
       setStep(4);
     })();
   }, [user, reg, refetchReg]);
+
+  // Tawarkan tutorial sekali saat pendaftar pertama kali tiba di langkah Dokumen.
+  useEffect(() => {
+    if (step !== 4 || !user || !reg) return;
+    try {
+      if (window.localStorage.getItem(TOUR_KEY)) return;
+      window.localStorage.setItem(TOUR_KEY, "1");
+    } catch {
+      /* penyimpanan ditolak: tetap tampilkan */
+    }
+    const t = window.setTimeout(() => setTourOpen(true), 600);
+    return () => window.clearTimeout(t);
+  }, [step, user, reg]);
 
   const buka = pendaftaranDibuka(settings);
   const terkunci = !!reg && reg.status !== "draft";
@@ -500,19 +567,35 @@ function PendaftaranPage() {
               : "Buat akun untuk mulai mengunggah berkas"}
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => {
-            if (!user) {
-              void navigate({ to: "/auth", search: { next: "/pendaftaran" } });
-              return;
-            }
-            setStep(4);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-        >
-          <Upload className="size-4" /> Unggah Dokumen
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              if (!user) {
+                void navigate({ to: "/auth", search: { next: "/pendaftaran" } });
+                return;
+              }
+              setStep(4);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            <ListChecks className="size-4" /> Panduan dokumen
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (!user) {
+                void navigate({ to: "/auth", search: { next: "/pendaftaran" } });
+                return;
+              }
+              setStep(4);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          >
+            <Upload className="size-4" /> Unggah Dokumen
+          </Button>
+        </div>
       </div>
 
 
@@ -713,11 +796,62 @@ function PendaftaranPage() {
 
         {step === 4 && !!user && !!reg && (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Unggah berkas berformat PDF, PNG, JPG, atau TIFF. Ukuran maksimal 2 MB per berkas;
-              foto otomatis diubah menjadi WebP kualitas 50% agar jauh lebih ringan namun tetap
-              jelas terbaca.
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Siapkan berkas, lalu unggah satu per satu di kartu bawah.
+              </p>
+              <Button variant="outline" size="sm" onClick={() => setTourOpen(true)}>
+                <CircleHelp className="size-4" /> Lihat Tutorial
+              </Button>
+            </div>
+
+            <div className="space-y-4 rounded-xl border bg-muted/40 p-4" data-tour="panduan">
+              <div>
+                <p className="flex items-center gap-2 font-medium">
+                  <ListChecks className="size-4 text-primary" /> Panduan Unggah Dokumen
+                </p>
+                <ul className="mt-3 space-y-2">
+                  {DOC_TYPES.map((d) => (
+                    <li key={d.key} className="flex items-start gap-2 text-sm">
+                      <span
+                        className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                          d.required
+                            ? "bg-destructive/10 text-destructive"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {d.required ? "Wajib" : "Opsional"}
+                      </span>
+                      <span>
+                        <span className="font-medium">{d.label}.</span>{" "}
+                        <span className="text-muted-foreground">{DOC_DESC[d.key]}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="grid gap-3 text-sm sm:grid-cols-2">
+                <div className="rounded-lg border bg-card p-3">
+                  <p className="font-medium">Format yang diterima</p>
+                  <p className="mt-1 text-muted-foreground">
+                    PDF, PNG, JPG, atau TIFF. Contoh: hasil scan ijazah biasanya PDF, sedangkan
+                    foto dokumen dari kamera HP biasanya JPG — keduanya langsung boleh diunggah.
+                  </p>
+                </div>
+                <div className="rounded-lg border bg-card p-3">
+                  <p className="font-medium">Ukuran maksimal 2 MB per berkas</p>
+                  <p className="mt-1 text-muted-foreground">
+                    Foto otomatis dikecilkan menjadi WebP kualitas 50%, jadi hasil foto HP hampir
+                    selalu bisa diunggah tanpa perlu mengecilkan sendiri.
+                  </p>
+                </div>
+              </div>
+              <p className="flex items-start gap-2 rounded-lg border border-dashed bg-card p-3 text-xs text-muted-foreground">
+                <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-500" />
+                Tips: foto dokumen di tempat terang, posisikan lurus dan tidak miring, pastikan
+                seluruh teks terbaca jelas dan tidak buram.
+              </p>
+            </div>
 
             {DOC_TYPES.map((d) => (
               <div key={d.key}>
@@ -775,11 +909,12 @@ function PendaftaranPage() {
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
+          <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
           <ArrowLeft className="size-4" /> Sebelumnya
         </Button>
+        <DocGuideTour steps={TOUR_STEPS} open={tourOpen && step === 4} onClose={() => setTourOpen(false)} />
         {step < LANGKAH.length - 1 && (step < 4 || (!!user && !!reg)) && (
-          <Button disabled={saving} onClick={() => void lanjut()}>
+          <Button data-tour="lanjut" disabled={saving} onClick={() => void lanjut()}>
             {saving ? <Loader2 className="size-4 animate-spin" /> : null}
             {!user && step === 3 ? "Lanjut & Simpan" : "Simpan & Lanjut"}{" "}
             <ArrowRight className="size-4" />
