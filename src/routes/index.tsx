@@ -59,7 +59,21 @@ function Beranda() {
     <>
       <section className="relative overflow-hidden border-b bg-gradient-to-br from-primary/10 via-background to-accent/20">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:grid-cols-2 md:py-20">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <motion.img
+              src={logoSekolah}
+              alt="Logo SMK Muhammadiyah 1 Paguyangan"
+              width={72}
+              height={72}
+              className="mb-4 size-18 object-contain"
+              initial={{ opacity: 0, scale: 0.7, rotate: -10 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            />
             <Badge variant={buka ? "default" : "secondary"} className="mb-4">
               {buka ? "Pendaftaran sedang dibuka" : "Pendaftaran belum dibuka"}
             </Badge>
