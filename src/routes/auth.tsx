@@ -85,10 +85,17 @@ function AuthPage() {
     <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md items-center px-4 py-12">
       <Card className="w-full">
         <CardHeader className="text-center">
-          <span className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <GraduationCap className="size-6" />
-          </span>
-          <CardTitle className="mt-3 text-2xl">Masuk ke SPMB Online</CardTitle>
+          <motion.img
+            src={logoSekolah}
+            alt="Logo SMK Muhammadiyah 1 Paguyangan"
+            width={64}
+            height={64}
+            className="mx-auto size-16 object-contain"
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 220, damping: 16 }}
+          />
+          <CardTitle className="mt-3 text-2xl">Masuk ke SPMB SMK Muhammadiyah 1 Paguyangan</CardTitle>
           <CardDescription>
             Wali murid wajib masuk menggunakan akun Google agar data pendaftaran tersimpan aman dan
             bisa dilanjutkan kapan saja.
