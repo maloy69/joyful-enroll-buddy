@@ -35,7 +35,7 @@ export const TIPE_DIIZINKAN = [
   "image/tif",
 ];
 export const ACCEPT_ATTR = ".pdf,.png,.jpg,.jpeg,.tif,.tiff,application/pdf,image/png,image/jpeg,image/tiff";
-export const TEKS_FORMAT = "PDF, PNG, JPG, atau TIFF · maksimal 2 MB · gambar otomatis jadi WebP";
+export const TEKS_FORMAT = "PDF, PNG, JPG, TIFF — maks. 2 MB · foto otomatis dikecilkan (WebP)";
 
 function cocokFormat(file: File) {
   if (TIPE_DIIZINKAN.includes(file.type.toLowerCase())) return true;
@@ -134,13 +134,15 @@ export function DocumentUploader({
 
   async function handleFile(file: File) {
     if (!cocokFormat(file)) {
-      toast.error("Format harus PDF, PNG, JPG, atau TIFF.");
+      toast.error("Format harus PDF, PNG, JPG, atau TIFF. Lihat panduan unggah di atas.");
       return;
     }
     const asli = file.size;
     const siap = await keWebp(file);
     if (siap.size > MAX_BYTES) {
-      toast.error(`Ukuran berkas maksimal 2 MB (berkas Anda ${formatBytes(siap.size)}).`);
+      toast.error(
+        `Ukuran berkas maksimal 2 MB (berkas Anda ${formatBytes(siap.size)}). Lihat panduan unggah di atas.`,
+      );
       return;
     }
     setProgress(1);
