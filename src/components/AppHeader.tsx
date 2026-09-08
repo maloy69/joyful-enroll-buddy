@@ -89,8 +89,16 @@ export function AppHeader() {
         </Button>
       </div>
 
+      <AnimatePresence initial={false}>
       {open && (
-        <div className="border-t bg-background px-4 py-3 md:hidden">
+        <motion.div
+          key="menu-mobile"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="overflow-hidden border-t bg-background px-4 py-3 md:hidden"
+        >
           <nav className="flex flex-col gap-1">
             {NAV.map((n) => (
               <Link
