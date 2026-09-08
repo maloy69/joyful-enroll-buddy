@@ -805,53 +805,7 @@ function PendaftaranPage() {
               </Button>
             </div>
 
-            <div className="space-y-4 rounded-xl border bg-muted/40 p-4" data-tour="panduan">
-              <div>
-                <p className="flex items-center gap-2 font-medium">
-                  <ListChecks className="size-4 text-primary" /> Panduan Unggah Dokumen
-                </p>
-                <ul className="mt-3 space-y-2">
-                  {DOC_TYPES.map((d) => (
-                    <li key={d.key} className="flex items-start gap-2 text-sm">
-                      <span
-                        className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-                          d.required
-                            ? "bg-destructive/10 text-destructive"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {d.required ? "Wajib" : "Opsional"}
-                      </span>
-                      <span>
-                        <span className="font-medium">{d.label}.</span>{" "}
-                        <span className="text-muted-foreground">{DOC_DESC[d.key]}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="grid gap-3 text-sm sm:grid-cols-2">
-                <div className="rounded-lg border bg-card p-3">
-                  <p className="font-medium">Format yang diterima</p>
-                  <p className="mt-1 text-muted-foreground">
-                    PDF, PNG, JPG, atau TIFF. Contoh: hasil scan ijazah biasanya PDF, sedangkan
-                    foto dokumen dari kamera HP biasanya JPG — keduanya langsung boleh diunggah.
-                  </p>
-                </div>
-                <div className="rounded-lg border bg-card p-3">
-                  <p className="font-medium">Ukuran maksimal 2 MB per berkas</p>
-                  <p className="mt-1 text-muted-foreground">
-                    Foto otomatis dikecilkan menjadi WebP kualitas 50%, jadi hasil foto HP hampir
-                    selalu bisa diunggah tanpa perlu mengecilkan sendiri.
-                  </p>
-                </div>
-              </div>
-              <p className="flex items-start gap-2 rounded-lg border border-dashed bg-card p-3 text-xs text-muted-foreground">
-                <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-500" />
-                Tips: foto dokumen di tempat terang, posisikan lurus dan tidak miring, pastikan
-                seluruh teks terbaca jelas dan tidak buram.
-              </p>
-            </div>
+            <PanduanPanel />
 
             {DOC_TYPES.map((d) => (
               <div key={d.key}>
