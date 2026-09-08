@@ -106,6 +106,25 @@ const TOUR_STEPS: TourStep[] = [
   },
 ];
 
+/** Tutorial versi tamu (belum masuk): tanpa kartu unggahan asli. */
+const GUEST_TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="panduan"]',
+    title: "Baca panduan dulu",
+    body: "Panel ini merangkum dokumen yang harus disiapkan, format yang diterima (PDF, PNG, JPG, TIFF), dan ukuran maksimal 2 MB per berkas.",
+  },
+  {
+    selector: '[data-tour="contoh-kartu"]',
+    title: "Beginilah tampilan unggahan",
+    body: "Setelah masuk, setiap dokumen punya kartu sendiri dengan tombol pilih berkas dan status verifikasi.",
+  },
+  {
+    selector: '[data-tour="masuk"]',
+    title: "Masuk dengan Google",
+    body: "Untuk mengunggah dokumen dan mengirim pendaftaran, masuk dulu dengan akun Google. Isian formulir Anda tidak hilang.",
+  },
+];
+
 function bacaDraft(): Record<string, string> {
   if (typeof window === "undefined") return {};
   try {
@@ -316,12 +335,14 @@ function PendaftaranPage() {
     })();
   }, [user, reg, refetchReg]);
 
-  // Tawarkan tutorial sekali saat pendaftar pertama kali tiba di langkah Dokumen.
+  // Tawarkan tutorial sekali di langkah Dokumen, baik sudah masuk maupun belum.
   useEffect(() => {
-    if (step !== 4 || !user || !reg) return;
+    if (step !== 4) return;
+    const masuk = !!user && !!reg;
+    const key = masuk ? TOUR_KEY : `${TOUR_KEY}-tamu`;
     try {
-      if (window.localStorage.getItem(TOUR_KEY)) return;
-      window.localStorage.setItem(TOUR_KEY, "1");
+      if (window.localStorage.getItem(key)) return;
+      window.localStorage.setItem(key, "1");
     } catch {
       /* penyimpanan ditolak: tetap tampilkan */
     }
@@ -429,8 +450,9 @@ function PendaftaranPage() {
     const ok = await simpan(step);
     if (!ok) return;
     if (!user && step === 3) {
-      toast.success("Isian tersimpan. Buat akun untuk melanjutkan unggah dokumen.");
-      void navigate({ to: "/auth", search: { next: "/pendaftaran" } });
+      toast.success("Isian tersimpan di perangkat ini. Lihat dulu panduan unggah dokumen.");
+      setStep(4);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     if (step < LANGKAH.length - 1) {
@@ -505,6 +527,56 @@ function PendaftaranPage() {
   }
 
   const namaJurusan = (id?: string) => (majors ?? []).find((m) => m.id === id)?.name ?? "-";
+
+  const PanduanPanel = () => (
+    <div className="space-y-4 rounded-xl border bg-muted/40 p-4" data-tour="panduan">
+      <div>
+        <p className="flex items-center gap-2 font-medium">
+          <ListChecks className="size-4 text-primary" /> Panduan Unggah Dokumen
+        </p>
+        <ul className="mt-3 space-y-2">
+          {DOC_TYPES.map((d) => (
+            <li key={d.key} className="flex items-start gap-2 text-sm">
+              <span
+                className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                  d.required
+                    ? "bg-destructive/10 text-destructive"
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {d.required ? "Wajib" : "Opsional"}
+              </span>
+              <span>
+                <span className="font-medium">{d.label}.</span>{" "}
+                <span className="text-muted-foreground">{DOC_DESC[d.key]}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="grid gap-3 text-sm sm:grid-cols-2">
+        <div className="rounded-lg border bg-card p-3">
+          <p className="font-medium">Format yang diterima</p>
+          <p className="mt-1 text-muted-foreground">
+            PDF, PNG, JPG, atau TIFF. Contoh: hasil scan ijazah biasanya PDF, sedangkan foto
+            dokumen dari kamera HP biasanya JPG — keduanya langsung boleh diunggah.
+          </p>
+        </div>
+        <div className="rounded-lg border bg-card p-3">
+          <p className="font-medium">Ukuran maksimal 2 MB per berkas</p>
+          <p className="mt-1 text-muted-foreground">
+            Foto otomatis dikecilkan menjadi WebP kualitas 50%, jadi hasil foto HP hampir selalu
+            bisa diunggah tanpa perlu mengecilkan sendiri.
+          </p>
+        </div>
+      </div>
+      <p className="flex items-start gap-2 rounded-lg border border-dashed bg-card p-3 text-xs text-muted-foreground">
+        <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-500" />
+        Tips: foto dokumen di tempat terang, posisikan lurus dan tidak miring, pastikan seluruh
+        teks terbaca jelas dan tidak buram.
+      </p>
+    </div>
+  );
 
   const AjakanMasuk = ({ pesan }: { pesan: string }) => (
     <div className="rounded-xl border bg-muted/50 p-5 text-center">
@@ -791,7 +863,38 @@ function PendaftaranPage() {
         )}
 
         {step >= 4 && (!user || !reg) && (
-          <AjakanMasuk pesan="Isian Anda sudah tersimpan di perangkat ini. Buat akun atau masuk untuk mengunggah dokumen dan mengirim pendaftaran." />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Pelajari dulu cara mengunggah dokumen — Anda bisa melihat tutorialnya tanpa masuk.
+              </p>
+              <Button variant="outline" size="sm" onClick={() => setTourOpen(true)}>
+                <CircleHelp className="size-4" /> Lihat Tutorial
+              </Button>
+            </div>
+
+            <PanduanPanel />
+
+            <div className="rounded-xl border bg-card p-4 opacity-90" data-tour="contoh-kartu">
+              <p className="text-sm font-medium">Contoh kartu unggahan</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Setelah masuk, tiap dokumen tampil seperti ini lengkap dengan tombol pilih berkas
+                dan status verifikasi.
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button size="sm" variant="secondary" disabled>
+                  Pilih Berkas
+                </Button>
+                <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+                  Menunggu verifikasi
+                </span>
+              </div>
+            </div>
+
+            <div data-tour="masuk">
+              <AjakanMasuk pesan="Isian Anda sudah tersimpan di perangkat ini. Masuk dengan akun Google untuk mengunggah dokumen dan mengirim pendaftaran." />
+            </div>
+          </div>
         )}
 
         {step === 4 && !!user && !!reg && (
@@ -805,53 +908,7 @@ function PendaftaranPage() {
               </Button>
             </div>
 
-            <div className="space-y-4 rounded-xl border bg-muted/40 p-4" data-tour="panduan">
-              <div>
-                <p className="flex items-center gap-2 font-medium">
-                  <ListChecks className="size-4 text-primary" /> Panduan Unggah Dokumen
-                </p>
-                <ul className="mt-3 space-y-2">
-                  {DOC_TYPES.map((d) => (
-                    <li key={d.key} className="flex items-start gap-2 text-sm">
-                      <span
-                        className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
-                          d.required
-                            ? "bg-destructive/10 text-destructive"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {d.required ? "Wajib" : "Opsional"}
-                      </span>
-                      <span>
-                        <span className="font-medium">{d.label}.</span>{" "}
-                        <span className="text-muted-foreground">{DOC_DESC[d.key]}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="grid gap-3 text-sm sm:grid-cols-2">
-                <div className="rounded-lg border bg-card p-3">
-                  <p className="font-medium">Format yang diterima</p>
-                  <p className="mt-1 text-muted-foreground">
-                    PDF, PNG, JPG, atau TIFF. Contoh: hasil scan ijazah biasanya PDF, sedangkan
-                    foto dokumen dari kamera HP biasanya JPG — keduanya langsung boleh diunggah.
-                  </p>
-                </div>
-                <div className="rounded-lg border bg-card p-3">
-                  <p className="font-medium">Ukuran maksimal 2 MB per berkas</p>
-                  <p className="mt-1 text-muted-foreground">
-                    Foto otomatis dikecilkan menjadi WebP kualitas 50%, jadi hasil foto HP hampir
-                    selalu bisa diunggah tanpa perlu mengecilkan sendiri.
-                  </p>
-                </div>
-              </div>
-              <p className="flex items-start gap-2 rounded-lg border border-dashed bg-card p-3 text-xs text-muted-foreground">
-                <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-500" />
-                Tips: foto dokumen di tempat terang, posisikan lurus dan tidak miring, pastikan
-                seluruh teks terbaca jelas dan tidak buram.
-              </p>
-            </div>
+            <PanduanPanel />
 
             {DOC_TYPES.map((d) => (
               <div key={d.key}>
@@ -912,7 +969,11 @@ function PendaftaranPage() {
           <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
           <ArrowLeft className="size-4" /> Sebelumnya
         </Button>
-        <DocGuideTour steps={TOUR_STEPS} open={tourOpen && step === 4} onClose={() => setTourOpen(false)} />
+        <DocGuideTour
+          steps={user && reg ? TOUR_STEPS : GUEST_TOUR_STEPS}
+          open={tourOpen && step === 4}
+          onClose={() => setTourOpen(false)}
+        />
         {step < LANGKAH.length - 1 && (step < 4 || (!!user && !!reg)) && (
           <Button data-tour="lanjut" disabled={saving} onClick={() => void lanjut()}>
             {saving ? <Loader2 className="size-4 animate-spin" /> : null}
