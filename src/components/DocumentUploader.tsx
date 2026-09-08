@@ -170,7 +170,12 @@ export function DocumentUploader({
       );
       if (error) throw error;
       await catatAudit("unggah_dokumen", "documents", registrationId, { doc_type: docType });
-      toast.success(`${label} berhasil diunggah.`);
+      toast.success(
+        siap.type === "image/webp" && siap.size < asli
+          ? `${label} diunggah — dikecilkan dari ${formatBytes(asli)} jadi ${formatBytes(siap.size)}.`
+          : `${label} berhasil diunggah.`,
+      );
+
       onChanged();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal mengunggah berkas.");
