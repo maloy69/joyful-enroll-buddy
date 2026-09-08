@@ -133,19 +133,26 @@ export function DocumentUploader({
   }, [existing?.file_path, existing]);
 
   async function handleFile(file: File) {
-    if (!["application/pdf", "image/png", "image/jpeg"].includes(file.type)) {
-      toast.error("Format harus PDF, PNG, atau JPG.");
+    if (!cocokFormat(file)) {
+      toast.error("Format harus PDF, PNG, JPG, atau TIFF.");
       return;
     }
-    const siap = await kompresGambar(file);
+    const asli = file.size;
+    const siap = await keWebp(file);
     if (siap.size > MAX_BYTES) {
       toast.error(`Ukuran berkas maksimal 2 MB (berkas Anda ${formatBytes(siap.size)}).`);
       return;
     }
     setProgress(1);
     try {
-      const ext = siap.type === "application/pdf" ? "pdf" : siap.type === "image/png" ? "png" : "jpg";
+      const ext =
+        siap.type === "application/pdf"
+          ? "pdf"
+          : siap.type === "image/webp"
+            ? "webp"
+            : (siap.name.split(".").pop() ?? "bin").toLowerCase();
       const path = `${userId}/${registrationId}/${docType}.${ext}`;
+
       await unggahDenganProgress(path, siap, setProgress);
       const { error } = await db.from("documents").upsert(
         {
