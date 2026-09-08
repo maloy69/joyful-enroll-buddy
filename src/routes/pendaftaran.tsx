@@ -335,12 +335,14 @@ function PendaftaranPage() {
     })();
   }, [user, reg, refetchReg]);
 
-  // Tawarkan tutorial sekali saat pendaftar pertama kali tiba di langkah Dokumen.
+  // Tawarkan tutorial sekali di langkah Dokumen, baik sudah masuk maupun belum.
   useEffect(() => {
-    if (step !== 4 || !user || !reg) return;
+    if (step !== 4) return;
+    const masuk = !!user && !!reg;
+    const key = masuk ? TOUR_KEY : `${TOUR_KEY}-tamu`;
     try {
-      if (window.localStorage.getItem(TOUR_KEY)) return;
-      window.localStorage.setItem(TOUR_KEY, "1");
+      if (window.localStorage.getItem(key)) return;
+      window.localStorage.setItem(key, "1");
     } catch {
       /* penyimpanan ditolak: tetap tampilkan */
     }
