@@ -199,7 +199,7 @@ export function DocumentUploader({
           <p className="font-medium text-card-foreground">
             {label} {required && <span className="text-destructive">*</span>}
           </p>
-          <p className="text-xs text-muted-foreground">PDF, PNG, atau JPG · maksimal 2 MB</p>
+          <p className="text-xs text-muted-foreground">{TEKS_FORMAT}</p>
         </div>
         {existing ? (
           <Badge
