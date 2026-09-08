@@ -25,21 +25,48 @@ const STATUS_TEXT = {
   rejected: "Ditolak",
 } as const;
 
-/** Kompres gambar seperlunya agar tetap terbaca (maks sisi 1600px, kualitas 0.82). */
-async function kompresGambar(file: File): Promise<File> {
-  if (!file.type.startsWith("image/") || file.size <= 700 * 1024) return file;
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.82));
-  if (!blob || blob.size >= file.size) return file;
-  return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+/** Format berkas yang boleh diunggah. */
+export const TIPE_DIIZINKAN = [
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/tiff",
+  "image/tif",
+];
+export const ACCEPT_ATTR = ".pdf,.png,.jpg,.jpeg,.tif,.tiff,application/pdf,image/png,image/jpeg,image/tiff";
+export const TEKS_FORMAT = "PDF, PNG, JPG, atau TIFF · maksimal 2 MB · gambar otomatis jadi WebP";
+
+function cocokFormat(file: File) {
+  if (TIPE_DIIZINKAN.includes(file.type.toLowerCase())) return true;
+  return /\.(pdf|png|jpe?g|tiff?)$/i.test(file.name);
 }
+
+function berupaGambar(file: File) {
+  return file.type.startsWith("image/") || /\.(png|jpe?g|tiff?)$/i.test(file.name);
+}
+
+/** Gambar apa pun (PNG/JPG/TIFF) diubah ke WebP kualitas 50% agar ukurannya jauh lebih kecil. */
+async function keWebp(file: File): Promise<File> {
+  if (!berupaGambar(file)) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/webp", 0.5));
+    if (!blob || blob.type !== "image/webp") return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+  } catch {
+    // Sebagian peramban tidak bisa membaca TIFF: berkas asli tetap diunggah.
+    return file;
+  }
+}
+
 
 async function unggahDenganProgress(path: string, file: File, onProgress: (p: number) => void) {
   const { data } = await supabase.auth.getSession();
@@ -106,19 +133,26 @@ export function DocumentUploader({
   }, [existing?.file_path, existing]);
 
   async function handleFile(file: File) {
-    if (!["application/pdf", "image/png", "image/jpeg"].includes(file.type)) {
-      toast.error("Format harus PDF, PNG, atau JPG.");
+    if (!cocokFormat(file)) {
+      toast.error("Format harus PDF, PNG, JPG, atau TIFF.");
       return;
     }
-    const siap = await kompresGambar(file);
+    const asli = file.size;
+    const siap = await keWebp(file);
     if (siap.size > MAX_BYTES) {
       toast.error(`Ukuran berkas maksimal 2 MB (berkas Anda ${formatBytes(siap.size)}).`);
       return;
     }
     setProgress(1);
     try {
-      const ext = siap.type === "application/pdf" ? "pdf" : siap.type === "image/png" ? "png" : "jpg";
+      const ext =
+        siap.type === "application/pdf"
+          ? "pdf"
+          : siap.type === "image/webp"
+            ? "webp"
+            : (siap.name.split(".").pop() ?? "bin").toLowerCase();
       const path = `${userId}/${registrationId}/${docType}.${ext}`;
+
       await unggahDenganProgress(path, siap, setProgress);
       const { error } = await db.from("documents").upsert(
         {
@@ -136,7 +170,12 @@ export function DocumentUploader({
       );
       if (error) throw error;
       await catatAudit("unggah_dokumen", "documents", registrationId, { doc_type: docType });
-      toast.success(`${label} berhasil diunggah.`);
+      toast.success(
+        siap.type === "image/webp" && siap.size < asli
+          ? `${label} diunggah — dikecilkan dari ${formatBytes(asli)} jadi ${formatBytes(siap.size)}.`
+          : `${label} berhasil diunggah.`,
+      );
+
       onChanged();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal mengunggah berkas.");
@@ -160,7 +199,7 @@ export function DocumentUploader({
           <p className="font-medium text-card-foreground">
             {label} {required && <span className="text-destructive">*</span>}
           </p>
-          <p className="text-xs text-muted-foreground">PDF, PNG, atau JPG · maksimal 2 MB</p>
+          <p className="text-xs text-muted-foreground">{TEKS_FORMAT}</p>
         </div>
         {existing ? (
           <Badge
@@ -222,7 +261,7 @@ export function DocumentUploader({
           <input
             ref={inputRef}
             type="file"
-            accept="application/pdf,image/png,image/jpeg"
+            accept={ACCEPT_ATTR}
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
