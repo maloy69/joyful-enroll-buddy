@@ -912,7 +912,11 @@ function PendaftaranPage() {
           <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
           <ArrowLeft className="size-4" /> Sebelumnya
         </Button>
-        <DocGuideTour steps={TOUR_STEPS} open={tourOpen && step === 4} onClose={() => setTourOpen(false)} />
+        <DocGuideTour
+          steps={user && reg ? TOUR_STEPS : GUEST_TOUR_STEPS}
+          open={tourOpen && step === 4}
+          onClose={() => setTourOpen(false)}
+        />
         {step < LANGKAH.length - 1 && (step < 4 || (!!user && !!reg)) && (
           <Button data-tour="lanjut" disabled={saving} onClick={() => void lanjut()}>
             {saving ? <Loader2 className="size-4 animate-spin" /> : null}
