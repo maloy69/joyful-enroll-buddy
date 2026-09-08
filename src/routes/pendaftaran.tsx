@@ -450,8 +450,9 @@ function PendaftaranPage() {
     const ok = await simpan(step);
     if (!ok) return;
     if (!user && step === 3) {
-      toast.success("Isian tersimpan. Buat akun untuk melanjutkan unggah dokumen.");
-      void navigate({ to: "/auth", search: { next: "/pendaftaran" } });
+      toast.success("Isian tersimpan di perangkat ini. Lihat dulu panduan unggah dokumen.");
+      setStep(4);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     if (step < LANGKAH.length - 1) {
