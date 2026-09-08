@@ -25,21 +25,48 @@ const STATUS_TEXT = {
   rejected: "Ditolak",
 } as const;
 
-/** Kompres gambar seperlunya agar tetap terbaca (maks sisi 1600px, kualitas 0.82). */
-async function kompresGambar(file: File): Promise<File> {
-  if (!file.type.startsWith("image/") || file.size <= 700 * 1024) return file;
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return file;
-  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/jpeg", 0.82));
-  if (!blob || blob.size >= file.size) return file;
-  return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+/** Format berkas yang boleh diunggah. */
+export const TIPE_DIIZINKAN = [
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/tiff",
+  "image/tif",
+];
+export const ACCEPT_ATTR = ".pdf,.png,.jpg,.jpeg,.tif,.tiff,application/pdf,image/png,image/jpeg,image/tiff";
+export const TEKS_FORMAT = "PDF, PNG, JPG, atau TIFF · maksimal 2 MB · gambar otomatis jadi WebP";
+
+function cocokFormat(file: File) {
+  if (TIPE_DIIZINKAN.includes(file.type.toLowerCase())) return true;
+  return /\.(pdf|png|jpe?g|tiff?)$/i.test(file.name);
 }
+
+function berupaGambar(file: File) {
+  return file.type.startsWith("image/") || /\.(png|jpe?g|tiff?)$/i.test(file.name);
+}
+
+/** Gambar apa pun (PNG/JPG/TIFF) diubah ke WebP kualitas 50% agar ukurannya jauh lebih kecil. */
+async function keWebp(file: File): Promise<File> {
+  if (!berupaGambar(file)) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob: Blob | null = await new Promise((res) => canvas.toBlob(res, "image/webp", 0.5));
+    if (!blob || blob.type !== "image/webp") return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+  } catch {
+    // Sebagian peramban tidak bisa membaca TIFF: berkas asli tetap diunggah.
+    return file;
+  }
+}
+
 
 async function unggahDenganProgress(path: string, file: File, onProgress: (p: number) => void) {
   const { data } = await supabase.auth.getSession();
