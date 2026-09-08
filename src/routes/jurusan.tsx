@@ -8,13 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/jurusan")({
   head: () => ({
     meta: [
-      { title: "Daftar Jurusan dan Kuota — SPMB Online" },
+      { title: "Daftar Jurusan dan Kuota — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Lihat seluruh jurusan yang dibuka beserta kuota daya tampung pada penerimaan murid baru tahun ini.",
       },
-      { property: "og:title", content: "Daftar Jurusan dan Kuota — SPMB Online" },
+      { property: "og:title", content: "Daftar Jurusan dan Kuota — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         property: "og:description",
         content: "Jurusan yang dibuka beserta kuota daya tampungnya.",

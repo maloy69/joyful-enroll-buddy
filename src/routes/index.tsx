@@ -18,13 +18,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SPMB Online — Pendaftaran Murid Baru Resmi" },
+      { title: "SPMB SMK Muhammadiyah 1 Paguyangan — Pendaftaran Murid Baru" },
       {
         name: "description",
         content:
           "Daftar murid baru secara daring: isi formulir bertahap, unggah dokumen, pantau seleksi, dan cetak kartu peserta ber-QR.",
       },
-      { property: "og:title", content: "SPMB Online — Pendaftaran Murid Baru Resmi" },
+      { property: "og:title", content: "SPMB SMK Muhammadiyah 1 Paguyangan — Pendaftaran Murid Baru" },
       {
         property: "og:description",
         content: "Pendaftaran murid baru daring yang mudah, cepat, dan transparan.",

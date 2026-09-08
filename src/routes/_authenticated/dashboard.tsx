@@ -20,13 +20,13 @@ import { CopyButton } from "@/components/CopyButton";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard Wali Murid — SPMB Online" },
+      { title: "Dashboard Wali Murid — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Pantau status pendaftaran, verifikasi dokumen, hasil seleksi, dan jadwal daftar ulang calon murid baru.",
       },
-      { property: "og:title", content: "Dashboard Wali Murid — SPMB Online" },
+      { property: "og:title", content: "Dashboard Wali Murid — SPMB SMK Muhammadiyah 1 Paguyangan" },
       { property: "og:description", content: "Pantau status pendaftaran calon murid baru." },
     ],
   }),

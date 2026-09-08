@@ -14,13 +14,13 @@ export const Route = createFileRoute("/auth")({
   },
   head: () => ({
     meta: [
-      { title: "Masuk Akun Wali Murid — SPMB Online" },
+      { title: "Masuk Akun Wali Murid — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Masuk dengan akun Google untuk mendaftarkan calon murid baru dan memantau status pendaftaran.",
       },
-      { property: "og:title", content: "Masuk Akun Wali Murid — SPMB Online" },
+      { property: "og:title", content: "Masuk Akun Wali Murid — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         property: "og:description",
         content: "Masuk dengan akun Google untuk mendaftar dan memantau status pendaftaran.",
