@@ -111,8 +111,13 @@ function Beranda() {
                 <dd className="text-2xl font-bold">Gratis</dd>
               </div>
             </dl>
-          </div>
-          <div className="relative">
+          </motion.div>
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+          >
             <img
               src={heroImg}
               alt="Calon murid baru berseragam di halaman sekolah"
@@ -120,7 +125,7 @@ function Beranda() {
               height={1000}
               className="w-full rounded-2xl border object-cover shadow-xl"
             />
-          </div>
+          </motion.div>
         </div>
       </section>
 
