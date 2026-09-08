@@ -80,6 +80,9 @@ function Beranda() {
             <h1 className="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
               Pendaftaran Murid Baru {settings?.academic_year ?? ""}
             </h1>
+            <p className="mt-2 text-lg font-semibold text-primary">
+              {settings?.school_name ?? "SMK Muhammadiyah 1 Paguyangan"}
+            </p>
             <p className="mt-4 max-w-lg text-base text-muted-foreground md:text-lg">
               Satu akun untuk semua proses: isi formulir bertahap, unggah dokumen, pantau hasil
               seleksi, sampai cetak kartu peserta. Semua bisa dikerjakan dari rumah.
