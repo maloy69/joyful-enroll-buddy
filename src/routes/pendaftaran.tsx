@@ -491,6 +491,32 @@ function PendaftaranPage() {
         />
       </div>
 
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/40 p-4">
+        <div>
+          <p className="text-sm font-medium">Dokumen persyaratan</p>
+          <p className="text-xs text-muted-foreground">
+            {user && reg
+              ? `${docs?.length ?? 0} dari ${DOC_TYPES.length} berkas sudah diunggah`
+              : "Buat akun untuk mulai mengunggah berkas"}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            if (!user) {
+              void navigate({ to: "/auth", search: { next: "/pendaftaran" } });
+              return;
+            }
+            setStep(4);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
+          <Upload className="size-4" /> Unggah Dokumen
+        </Button>
+      </div>
+
+
+
       <div className="mt-8 space-y-5 rounded-xl border bg-card p-5 md:p-6">
         {step === 0 && (
           <div className="grid gap-5 sm:grid-cols-2">
