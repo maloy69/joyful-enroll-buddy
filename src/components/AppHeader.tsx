@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { GraduationCap, LogOut, Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import logoSekolah from "@/assets/logo-smk.webp";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
