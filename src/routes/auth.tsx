@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { GraduationCap, Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import logoSekolah from "@/assets/logo-smk.webp";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
