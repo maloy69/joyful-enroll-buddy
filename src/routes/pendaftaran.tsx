@@ -218,6 +218,7 @@ function PendaftaranPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
@@ -314,6 +315,19 @@ function PendaftaranPage() {
       setStep(4);
     })();
   }, [user, reg, refetchReg]);
+
+  // Tawarkan tutorial sekali saat pendaftar pertama kali tiba di langkah Dokumen.
+  useEffect(() => {
+    if (step !== 4 || !user || !reg) return;
+    try {
+      if (window.localStorage.getItem(TOUR_KEY)) return;
+      window.localStorage.setItem(TOUR_KEY, "1");
+    } catch {
+      /* penyimpanan ditolak: tetap tampilkan */
+    }
+    const t = window.setTimeout(() => setTourOpen(true), 600);
+    return () => window.clearTimeout(t);
+  }, [step, user, reg]);
 
   const buka = pendaftaranDibuka(settings);
   const terkunci = !!reg && reg.status !== "draft";
