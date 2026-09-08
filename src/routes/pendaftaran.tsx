@@ -106,6 +106,25 @@ const TOUR_STEPS: TourStep[] = [
   },
 ];
 
+/** Tutorial versi tamu (belum masuk): tanpa kartu unggahan asli. */
+const GUEST_TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="panduan"]',
+    title: "Baca panduan dulu",
+    body: "Panel ini merangkum dokumen yang harus disiapkan, format yang diterima (PDF, PNG, JPG, TIFF), dan ukuran maksimal 2 MB per berkas.",
+  },
+  {
+    selector: '[data-tour="contoh-kartu"]',
+    title: "Beginilah tampilan unggahan",
+    body: "Setelah masuk, setiap dokumen punya kartu sendiri dengan tombol pilih berkas dan status verifikasi.",
+  },
+  {
+    selector: '[data-tour="masuk"]',
+    title: "Masuk dengan Google",
+    body: "Untuk mengunggah dokumen dan mengirim pendaftaran, masuk dulu dengan akun Google. Isian formulir Anda tidak hilang.",
+  },
+];
+
 function bacaDraft(): Record<string, string> {
   if (typeof window === "undefined") return {};
   try {
