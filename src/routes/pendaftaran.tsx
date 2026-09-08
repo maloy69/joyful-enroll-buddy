@@ -688,9 +688,11 @@ function PendaftaranPage() {
         {step === 4 && !!user && !!reg && (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Unggah berkas berformat PDF, PNG, atau JPG. Ukuran maksimal 2 MB per berkas; foto
-              berukuran besar akan otomatis dikompres agar tetap jelas terbaca.
+              Unggah berkas berformat PDF, PNG, JPG, atau TIFF. Ukuran maksimal 2 MB per berkas;
+              foto otomatis diubah menjadi WebP kualitas 50% agar jauh lebih ringan namun tetap
+              jelas terbaca.
             </p>
+
             {DOC_TYPES.map((d) => (
               <div key={d.key}>
                 <DocumentUploader
