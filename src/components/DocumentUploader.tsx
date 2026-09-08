@@ -195,8 +195,8 @@ export function DocumentUploader({
   }
 
   return (
-    <div className="rounded-xl border bg-card p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="rounded-xl border bg-card p-4" data-tour="kartu-dokumen">
+      <div className="flex flex-wrap items-start justify-between gap-3" data-tour="status-dokumen">
         <div>
           <p className="font-medium text-card-foreground">
             {label} {required && <span className="text-destructive">*</span>}
@@ -275,6 +275,7 @@ export function DocumentUploader({
             type="button"
             variant="outline"
             size="sm"
+            data-tour="pilih-berkas"
             disabled={progress !== null}
             onClick={() => inputRef.current?.click()}
           >
