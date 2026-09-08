@@ -909,11 +909,12 @@ function PendaftaranPage() {
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
+          <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
           <ArrowLeft className="size-4" /> Sebelumnya
         </Button>
+        <DocGuideTour steps={TOUR_STEPS} open={tourOpen && step === 4} onClose={() => setTourOpen(false)} />
         {step < LANGKAH.length - 1 && (step < 4 || (!!user && !!reg)) && (
-          <Button disabled={saving} onClick={() => void lanjut()}>
+          <Button data-tour="lanjut" disabled={saving} onClick={() => void lanjut()}>
             {saving ? <Loader2 className="size-4 animate-spin" /> : null}
             {!user && step === 3 ? "Lanjut & Simpan" : "Simpan & Lanjut"}{" "}
             <ArrowRight className="size-4" />
