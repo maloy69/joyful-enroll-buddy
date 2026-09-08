@@ -1,7 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Send, Upload } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  CircleHelp,
+  Lightbulb,
+  ListChecks,
+  Loader2,
+  Send,
+  Upload,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import {
@@ -20,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DocumentUploader, type DocRow } from "@/components/DocumentUploader";
+import { DocGuideTour, type TourStep } from "@/components/DocGuideTour";
 
 export const Route = createFileRoute("/pendaftaran")({
   ssr: false,
@@ -52,6 +63,48 @@ const LANGKAH = [
 
 /** Kunci penyimpanan sementara di perangkat untuk pendaftar yang belum masuk. */
 const DRAFT_KEY = "spmb-draft";
+
+/** Penanda bahwa tutorial unggah dokumen sudah pernah tampil otomatis. */
+const TOUR_KEY = "spmb-tour-docs-seen";
+
+/** Penjelasan singkat tiap dokumen untuk panel panduan. */
+const DOC_DESC: Record<string, string> = {
+  kk: "Scan atau foto Kartu Keluarga yang masih berlaku.",
+  akta: "Scan akta kelahiran, boleh fotokopi yang dilegalisir.",
+  rapor: "Scan rapor semester 1–5, pastikan nilai terbaca jelas.",
+  ijazah: "Ijazah SMP/MTs atau Surat Keterangan Lulus (SKL).",
+  foto: "Pas foto 3×4 berlatar polos, wajah terlihat jelas.",
+  prestasi: "Sertifikat kejuaraan atau prestasi, jika ada.",
+};
+
+/** Urutan langkah tutorial on-screen di langkah Dokumen. */
+const TOUR_STEPS: TourStep[] = [
+  {
+    selector: '[data-tour="panduan"]',
+    title: "Baca panduan dulu",
+    body: "Panel ini merangkum dokumen yang harus disiapkan, contoh format yang diterima, dan ukuran maksimal berkas.",
+  },
+  {
+    selector: '[data-tour="kartu-dokumen"]',
+    title: "Satu kartu, satu dokumen",
+    body: "Setiap dokumen punya kartu sendiri. Tanda bintang merah berarti wajib diunggah sebelum pendaftaran bisa dikirim.",
+  },
+  {
+    selector: '[data-tour="pilih-berkas"]',
+    title: "Pilih berkas di sini",
+    body: "Tekan tombol ini untuk memilih berkas dari HP atau komputer. Foto dari kamera HP otomatis dikecilkan, jadi hampir selalu langsung bisa diunggah.",
+  },
+  {
+    selector: '[data-tour="status-dokumen"]',
+    title: "Pantau status berkas",
+    body: "Setelah diunggah, status tampil di sini: menunggu verifikasi, disetujui, atau ditolak beserta catatan perbaikannya.",
+  },
+  {
+    selector: '[data-tour="lanjut"]',
+    title: "Lanjut ke ringkasan",
+    body: "Jika semua dokumen wajib sudah terunggah, tekan Simpan & Lanjut untuk memeriksa ringkasan lalu mengirim pendaftaran.",
+  },
+];
 
 function bacaDraft(): Record<string, string> {
   if (typeof window === "undefined") return {};
