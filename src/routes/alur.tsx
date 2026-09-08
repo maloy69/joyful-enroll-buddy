@@ -5,13 +5,13 @@ import { DOC_TYPES } from "@/lib/spmb";
 export const Route = createFileRoute("/alur")({
   head: () => ({
     meta: [
-      { title: "Alur dan Syarat Pendaftaran — SPMB Online" },
+      { title: "Alur dan Syarat Pendaftaran — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Enam langkah pendaftaran murid baru: masuk akun, isi formulir, unggah dokumen, verifikasi, pengumuman, dan daftar ulang.",
       },
-      { property: "og:title", content: "Alur dan Syarat Pendaftaran — SPMB Online" },
+      { property: "og:title", content: "Alur dan Syarat Pendaftaran — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         property: "og:description",
         content: "Panduan lengkap tahapan pendaftaran murid baru daring.",

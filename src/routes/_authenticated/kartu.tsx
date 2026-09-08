@@ -14,13 +14,13 @@ import { CopyButton } from "@/components/CopyButton";
 export const Route = createFileRoute("/_authenticated/kartu")({
   head: () => ({
     meta: [
-      { title: "Kartu Peserta & Bukti Pendaftaran — SPMB Online" },
+      { title: "Kartu Peserta & Bukti Pendaftaran — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Cetak kartu peserta ukuran A4 lengkap dengan kode QR untuk verifikasi daftar ulang di sekolah.",
       },
-      { property: "og:title", content: "Kartu Peserta & Bukti Pendaftaran — SPMB Online" },
+      { property: "og:title", content: "Kartu Peserta & Bukti Pendaftaran — SPMB SMK Muhammadiyah 1 Paguyangan" },
       { property: "og:description", content: "Kartu peserta ber-QR siap cetak A4." },
     ],
   }),
@@ -161,7 +161,7 @@ function KartuPage() {
             <p className="text-xs uppercase tracking-widest text-slate-500">
               Sistem Penerimaan Murid Baru
             </p>
-            <h2 className="text-2xl font-extrabold">{settings?.school_name ?? "SPMB Online"}</h2>
+            <h2 className="text-2xl font-extrabold">{settings?.school_name ?? "SMK Muhammadiyah 1 Paguyangan"}</h2>
             <p className="text-sm">Tahun Ajaran {settings?.academic_year ?? "-"}</p>
           </div>
           {qr && <img src={qr} alt="Kode QR peserta" className="size-28" />}

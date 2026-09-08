@@ -10,13 +10,13 @@ import { Badge } from "@/components/ui/badge";
 export const Route = createFileRoute("/pengumuman")({
   head: () => ({
     meta: [
-      { title: "Pengumuman Hasil Seleksi — SPMB Online" },
+      { title: "Pengumuman Hasil Seleksi — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Cek hasil seleksi penerimaan murid baru dengan memasukkan nomor pendaftaran. Hasil terbit sesuai jadwal WIB.",
       },
-      { property: "og:title", content: "Pengumuman Hasil Seleksi — SPMB Online" },
+      { property: "og:title", content: "Pengumuman Hasil Seleksi — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         property: "og:description",
         content: "Cek hasil seleksi dengan nomor pendaftaran Anda.",

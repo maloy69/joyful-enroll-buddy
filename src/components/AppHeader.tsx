@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { GraduationCap, LogOut, Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import logoSekolah from "@/assets/logo-smk.webp";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
@@ -19,13 +21,26 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 border-b bg-background/85 backdrop-blur print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <GraduationCap className="size-5" />
-          </span>
-          <span className="leading-tight">
-            <span className="block text-sm font-bold">SPMB Online</span>
-            <span className="block text-xs text-muted-foreground">Penerimaan Murid Baru</span>
-          </span>
+          <motion.img
+            src={logoSekolah}
+            alt="Logo SMK Muhammadiyah 1 Paguyangan"
+            width={40}
+            height={40}
+            className="size-10 object-contain"
+            initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+            whileHover={{ scale: 1.08, rotate: 4 }}
+          />
+          <motion.span
+            className="leading-tight"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, duration: 0.35 }}
+          >
+            <span className="block text-sm font-bold">SMK Muhammadiyah 1 Paguyangan</span>
+            <span className="block text-xs text-muted-foreground">SPMB — Penerimaan Murid Baru</span>
+          </motion.span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -74,8 +89,16 @@ export function AppHeader() {
         </Button>
       </div>
 
+      <AnimatePresence initial={false}>
       {open && (
-        <div className="border-t bg-background px-4 py-3 md:hidden">
+        <motion.div
+          key="menu-mobile"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="overflow-hidden border-t bg-background px-4 py-3 md:hidden"
+        >
           <nav className="flex flex-col gap-1">
             {NAV.map((n) => (
               <Link
@@ -122,8 +145,9 @@ export function AppHeader() {
               </Link>
             )}
           </nav>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 }

@@ -36,13 +36,13 @@ export const Route = createFileRoute("/pendaftaran")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Formulir Pendaftaran Murid Baru — SPMB Online" },
+      { title: "Formulir Pendaftaran Murid Baru — SPMB SMK Muhammadiyah 1 Paguyangan" },
       {
         name: "description",
         content:
           "Isi formulir pendaftaran murid baru secara bertahap: data siswa, alamat, sekolah asal, orang tua, pilihan jurusan, dan dokumen.",
       },
-      { property: "og:title", content: "Formulir Pendaftaran Murid Baru — SPMB Online" },
+      { property: "og:title", content: "Formulir Pendaftaran Murid Baru — SPMB SMK Muhammadiyah 1 Paguyangan" },
       { property: "og:description", content: "Formulir pendaftaran murid baru bertahap." },
     ],
   }),

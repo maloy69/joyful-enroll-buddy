@@ -102,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,
@@ -138,7 +138,9 @@ function RootComponent() {
           </main>
           <footer className="border-t bg-muted/40 print:hidden">
             <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted-foreground">
-              <p className="font-semibold text-foreground">SPMB Online</p>
+              <p className="font-semibold text-foreground">
+                SMK Muhammadiyah 1 Paguyangan — SPMB Online
+              </p>
               <p className="mt-1">
                 Sistem Penerimaan Murid Baru. Seluruh waktu yang ditampilkan menggunakan Waktu
                 Indonesia Barat (WIB).

@@ -9,7 +9,9 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-spmb.jpg";
+import logoSekolah from "@/assets/logo-smk.webp";
 import { db, fmtWIB, pendaftaranDibuka, type Jadwal } from "@/lib/spmb";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,13 +20,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SPMB Online — Pendaftaran Murid Baru Resmi" },
+      { title: "SPMB SMK Muhammadiyah 1 Paguyangan — Pendaftaran Murid Baru" },
       {
         name: "description",
         content:
           "Daftar murid baru secara daring: isi formulir bertahap, unggah dokumen, pantau seleksi, dan cetak kartu peserta ber-QR.",
       },
-      { property: "og:title", content: "SPMB Online — Pendaftaran Murid Baru Resmi" },
+      { property: "og:title", content: "SPMB SMK Muhammadiyah 1 Paguyangan — Pendaftaran Murid Baru" },
       {
         property: "og:description",
         content: "Pendaftaran murid baru daring yang mudah, cepat, dan transparan.",
@@ -59,13 +61,30 @@ function Beranda() {
     <>
       <section className="relative overflow-hidden border-b bg-gradient-to-br from-primary/10 via-background to-accent/20">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:grid-cols-2 md:py-20">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <motion.img
+              src={logoSekolah}
+              alt="Logo SMK Muhammadiyah 1 Paguyangan"
+              width={72}
+              height={72}
+              className="mb-4 size-18 object-contain"
+              initial={{ opacity: 0, scale: 0.7, rotate: -10 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            />
             <Badge variant={buka ? "default" : "secondary"} className="mb-4">
               {buka ? "Pendaftaran sedang dibuka" : "Pendaftaran belum dibuka"}
             </Badge>
             <h1 className="text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
               Pendaftaran Murid Baru {settings?.academic_year ?? ""}
             </h1>
+            <p className="mt-2 text-lg font-semibold text-primary">
+              {settings?.school_name ?? "SMK Muhammadiyah 1 Paguyangan"}
+            </p>
             <p className="mt-4 max-w-lg text-base text-muted-foreground md:text-lg">
               Satu akun untuk semua proses: isi formulir bertahap, unggah dokumen, pantau hasil
               seleksi, sampai cetak kartu peserta. Semua bisa dikerjakan dari rumah.
@@ -94,8 +113,13 @@ function Beranda() {
                 <dd className="text-2xl font-bold">Gratis</dd>
               </div>
             </dl>
-          </div>
-          <div className="relative">
+          </motion.div>
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+          >
             <img
               src={heroImg}
               alt="Calon murid baru berseragam di halaman sekolah"
@@ -103,7 +127,7 @@ function Beranda() {
               height={1000}
               className="w-full rounded-2xl border object-cover shadow-xl"
             />
-          </div>
+          </motion.div>
         </div>
       </section>
 
